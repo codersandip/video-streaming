@@ -16,7 +16,7 @@ StreamVault is a high-performance, self-hosted HLS video streaming platform. It 
 ### 🌐 Frontend (React & Vite)
 - **Player**: Custom HLS player using `hls.js` with premium UI controls.
 - **Animations**: `framer-motion` for smooth transitions.
-- **Styling**: Premium Glassmorphism design system using Vanilla CSS.
+- **Styling**: Premium modern UI using **Material UI 5** with a sleek dark theme and glassmorphism.
 
 ---
 

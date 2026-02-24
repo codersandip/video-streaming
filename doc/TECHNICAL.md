@@ -38,10 +38,13 @@
 ---
 
 ## 🎨 UI Design System
-- **Background**: Deep surface color `#0f172a`
+- **Framework**: Material UI 5 (MUI)
+- **Theme**: Custom Dark Mode with Slate-Indigo palette.
+- **Background**: Deep surface color `#0f172a` (Slate 900)
 - **Primary Accent**: Indigo `#6366f1`
-- **Secondary Accent**: Cyan `#06b6d4`
-- **Effects**: Backdrop blur (20px), Subtle borders (rgba 255/0.1), Gradients.
+- **Secondary Accent**: Pink `#ec4899`
+- **Typography**: `Outfit` (Headings) and `Inter` (Body)
+- **Effects**: Backdrop blur (12px), Glassmorphism, Linear Gradients.
 
 ---
 

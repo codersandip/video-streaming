@@ -1,6 +1,6 @@
 # 🎬 StreamVault - Self-Hosted Video Streaming Platform
 
-A premium, production-ready video streaming platform built with React, Node.js, and FFmpeg. Features HLS adaptive streaming, secure JWT authentication, and a tiered subscription system.
+A premium, production-ready video streaming platform built with React, Material UI, Node.js, and FFmpeg. Features a stunning modern dark interface, HLS adaptive streaming, secure JWT authentication, and a tiered subscription system.
 
 ## 🚀 Quick Start
 
