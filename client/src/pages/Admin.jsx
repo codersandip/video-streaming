@@ -1,76 +1,144 @@
 import { useState, useRef } from 'react';
 import api from '../api/axios';
-import { Upload, FileVideo, CheckCircle, XCircle, BarChart3, Users, Film, Settings } from 'lucide-react';
+import {
+    Box,
+    Typography,
+    Container,
+    Grid,
+    Paper,
+    Tabs,
+    Tab,
+    Button,
+    TextField,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    LinearProgress,
+    Alert,
+    Stack,
+    IconButton,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    ListItemButton,
+    Divider
+} from '@mui/material';
+import {
+    CloudUpload as UploadIcon,
+    VideoFile as FileVideoIcon,
+    CheckCircle as SuccessIcon,
+    Error as ErrorIcon,
+    BarChart as DashboardIcon,
+    People as UsersIcon,
+    Movie as FilmIcon,
+    Settings as SettingsIcon,
+    Close as CloseIcon
+} from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
 const Admin = () => {
-    const [activeTab, setActiveTab] = useState('upload');
-    const [stats, setStats] = useState(null);
+    const [activeTab, setActiveTab] = useState(0);
+
+    const handleTabChange = (event, newValue) => {
+        setActiveTab(newValue);
+    };
 
     return (
-        <div style={{ padding: '2rem', display: 'flex', gap: '2rem' }}>
-            <aside className="glass" style={{ width: '250px', padding: '1.5rem', height: 'fit-content' }}>
-                <h3 style={{ marginBottom: '2rem', paddingLeft: '0.5rem' }}>Admin Panel</h3>
-                <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                    <AdminLink
-                        active={activeTab === 'dashboard'}
-                        onClick={() => setActiveTab('dashboard')}
-                        icon={<BarChart3 size={18} />}
-                        label="Dashboard"
-                    />
-                    <AdminLink
-                        active={activeTab === 'upload'}
-                        onClick={() => setActiveTab('upload')}
-                        icon={<Upload size={18} />}
-                        label="Upload Video"
-                    />
-                    <AdminLink
-                        active={activeTab === 'videos'}
-                        onClick={() => setActiveTab('videos')}
-                        icon={<Film size={18} />}
-                        label="Manage Videos"
-                    />
-                    <AdminLink
-                        active={activeTab === 'users'}
-                        onClick={() => setActiveTab('users')}
-                        icon={<Users size={18} />}
-                        label="User Management"
-                    />
-                    <AdminLink
-                        active={activeTab === 'settings'}
-                        onClick={() => setActiveTab('settings')}
-                        icon={<Settings size={18} />}
-                        label="Settings"
-                    />
-                </nav>
-            </aside>
+        <Container maxWidth="xl" sx={{ py: 4 }}>
+            <Grid container spacing={3}>
+                <Grid item xs={12} md={3}>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 2,
+                            borderRadius: 4,
+                            bgcolor: 'rgba(30, 41, 59, 0.5)',
+                            backdropFilter: 'blur(10px)',
+                            border: '1px solid rgba(255,255,255,0.05)'
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ px: 2, py: 2, fontWeight: 800 }}>
+                            Admin Panel
+                        </Typography>
+                        <Divider sx={{ mb: 1, borderColor: 'rgba(255,255,255,0.05)' }} />
+                        <List component="nav">
+                            <AdminMenuItem
+                                active={activeTab === 0}
+                                onClick={() => setActiveTab(0)}
+                                icon={<DashboardIcon />}
+                                label="Dashboard"
+                            />
+                            <AdminMenuItem
+                                active={activeTab === 1}
+                                onClick={() => setActiveTab(1)}
+                                icon={<UploadIcon />}
+                                label="Upload Video"
+                            />
+                            <AdminMenuItem
+                                active={activeTab === 2}
+                                onClick={() => setActiveTab(2)}
+                                icon={<FilmIcon />}
+                                label="Manage Videos"
+                            />
+                            <AdminMenuItem
+                                active={activeTab === 3}
+                                onClick={() => setActiveTab(3)}
+                                icon={<UsersIcon />}
+                                label="Users"
+                            />
+                            <AdminMenuItem
+                                active={activeTab === 4}
+                                onClick={() => setActiveTab(4)}
+                                icon={<SettingsIcon />}
+                                label="Settings"
+                            />
+                        </List>
+                    </Paper>
+                </Grid>
 
-            <main style={{ flex: 1 }}>
-                {activeTab === 'upload' && <UploadView />}
-                {activeTab === 'dashboard' && <div className="glass" style={{ padding: '2rem' }}>Analytics coming soon...</div>}
-            </main>
-        </div>
+                <Grid item xs={12} md={9}>
+                    <Box component={motion.div} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                        {activeTab === 1 && <UploadView />}
+                        {activeTab === 0 && (
+                            <Paper sx={{ p: 6, borderRadius: 4, textAlign: 'center', bgcolor: 'rgba(30, 41, 59, 0.5)' }}>
+                                <DashboardIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
+                                <Typography variant="h5" color="text.secondary">Analytics coming soon...</Typography>
+                            </Paper>
+                        )}
+                        {activeTab !== 0 && activeTab !== 1 && (
+                            <Paper sx={{ p: 6, borderRadius: 4, textAlign: 'center', bgcolor: 'rgba(30, 41, 59, 0.5)' }}>
+                                <Typography variant="h5" color="text.secondary">Section coming soon...</Typography>
+                            </Paper>
+                        )}
+                    </Box>
+                </Grid>
+            </Grid>
+        </Container>
     );
 };
 
-const AdminLink = ({ active, onClick, icon, label }) => (
-    <button onClick={onClick} style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.75rem',
-        padding: '0.75rem 1rem',
-        borderRadius: '10px',
-        background: active ? 'var(--primary)' : 'transparent',
-        color: active ? 'white' : 'var(--text-muted)',
-        border: 'none',
-        cursor: 'pointer',
-        textAlign: 'left',
-        fontWeight: active ? 600 : 500,
-        transition: 'all 0.2s ease'
-    }}>
-        {icon}
-        {label}
-    </button>
+const AdminMenuItem = ({ active, onClick, icon, label }) => (
+    <ListItem disablePadding sx={{ mb: 0.5 }}>
+        <ListItemButton
+            onClick={onClick}
+            sx={{
+                borderRadius: 2,
+                bgcolor: active ? 'primary.main' : 'transparent',
+                color: active ? 'white' : 'text.secondary',
+                '&:hover': {
+                    bgcolor: active ? 'primary.dark' : 'rgba(255,255,255,0.05)',
+                    color: active ? 'white' : 'text.primary',
+                }
+            }}
+        >
+            <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
+                {icon}
+            </ListItemIcon>
+            <ListItemText primary={label} primaryTypographyProps={{ fontWeight: active ? 700 : 500 }} />
+        </ListItemButton>
+    </ListItem>
 );
 
 const UploadView = () => {
@@ -114,39 +182,66 @@ const UploadView = () => {
     };
 
     return (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="glass" style={{ padding: '2.5rem' }}>
-            <h2 style={{ marginBottom: '2rem' }}>Upload New Video</h2>
+        <Paper
+            elevation={0}
+            sx={{
+                p: { xs: 3, md: 5 },
+                borderRadius: 4,
+                bgcolor: 'rgba(30, 41, 59, 0.5)',
+                border: '1px solid rgba(255,255,255,0.05)'
+            }}
+        >
+            <Typography variant="h5" fontWeight={800} gutterBottom sx={{ mb: 4 }}>
+                Upload New Video
+            </Typography>
 
             {status === 'success' && (
-                <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', padding: '1rem', borderRadius: '10px', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <CheckCircle size={20} />
-                    <span>Upload complete! Video is now being processed into HLS.</span>
-                    <button onClick={() => setStatus('idle')} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontWeight: 600 }}>Dismiss</button>
-                </div>
+                <Alert
+                    severity="success"
+                    icon={<SuccessIcon />}
+                    sx={{ mb: 4, borderRadius: 2 }}
+                    action={
+                        <IconButton size="small" onClick={() => setStatus('idle')}>
+                            <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                    }
+                >
+                    Upload complete! Video is now being processed into HLS format.
+                </Alert>
             )}
 
             {status === 'error' && (
-                <div style={{ background: 'rgba(239, 68, 68, 0.1)', color: 'var(--error)', padding: '1rem', borderRadius: '10px', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <XCircle size={20} />
-                    <span>{error}</span>
-                    <button onClick={() => setStatus('idle')} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontWeight: 600 }}>Retry</button>
-                </div>
+                <Alert
+                    severity="error"
+                    icon={<ErrorIcon />}
+                    sx={{ mb: 4, borderRadius: 2 }}
+                    action={
+                        <Button color="inherit" size="small" onClick={() => setStatus('idle')}>
+                            RETRY
+                        </Button>
+                    }
+                >
+                    {error}
+                </Alert>
             )}
 
-            <form onSubmit={handleUpload} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-                <div className="section-left">
-                    <div className="input-group">
-                        <label>Video File</label>
-                        <div
+            <form onSubmit={handleUpload}>
+                <Grid container spacing={4}>
+                    <Grid item xs={12} lg={6}>
+                        <Box
                             onClick={() => fileInputRef.current.click()}
-                            style={{
-                                border: '2px dashed var(--glass-border)',
-                                borderRadius: '12px',
-                                padding: '3rem 1rem',
+                            sx={{
+                                border: '2px dashed rgba(255,255,255,0.1)',
+                                borderRadius: 4,
+                                p: 6,
                                 textAlign: 'center',
                                 cursor: 'pointer',
-                                background: file ? 'rgba(99, 102, 241, 0.05)' : 'transparent',
-                                transition: 'border-color 0.2s ease'
+                                transition: 'all 0.2s ease',
+                                bgcolor: file ? 'rgba(99, 102, 241, 0.05)' : 'transparent',
+                                '&:hover': {
+                                    borderColor: 'primary.main',
+                                    bgcolor: 'rgba(99, 102, 241, 0.02)'
+                                }
                             }}
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={(e) => {
@@ -156,93 +251,124 @@ const UploadView = () => {
                         >
                             <input type="file" ref={fileInputRef} hidden onChange={(e) => setFile(e.target.files[0])} accept="video/*" />
                             {file ? (
-                                <div style={{ color: 'var(--primary)' }}>
-                                    <FileVideo size={48} style={{ marginBottom: '1rem' }} />
-                                    <p style={{ fontWeight: 600 }}>{file.name}</p>
-                                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{(file.size / (1024 * 1024)).toFixed(2)} MB</p>
-                                </div>
+                                <Stack alignItems="center" spacing={2}>
+                                    <FileVideoIcon sx={{ fontSize: 60, color: 'primary.main' }} />
+                                    <Box>
+                                        <Typography variant="subtitle1" fontWeight={700}>{file.name}</Typography>
+                                        <Typography variant="caption" color="text.secondary">
+                                            {(file.size / (1024 * 1024)).toFixed(2)} MB
+                                        </Typography>
+                                    </Box>
+                                </Stack>
                             ) : (
-                                <div style={{ color: 'var(--text-muted)' }}>
-                                    <Upload size={48} style={{ marginBottom: '1rem' }} />
-                                    <p style={{ fontWeight: 500 }}>Click or drag video to upload</p>
-                                    <p style={{ fontSize: '0.8rem' }}>MP4, MKV, MOV (Max 5GB)</p>
-                                </div>
+                                <Stack alignItems="center" spacing={2} color="text.secondary">
+                                    <UploadIcon sx={{ fontSize: 60 }} />
+                                    <Box>
+                                        <Typography variant="subtitle1" fontWeight={600} color="text.primary">
+                                            Click or drag video to upload
+                                        </Typography>
+                                        <Typography variant="caption">
+                                            MP4, MKV, MOV (Max 5GB)
+                                        </Typography>
+                                    </Box>
+                                </Stack>
                             )}
-                        </div>
-                    </div>
+                        </Box>
 
-                    <div className="input-group">
-                        <label>Genre</label>
-                        <select value={formData.genre} onChange={(e) => setFormData({ ...formData, genre: e.target.value })}>
-                            <option>Movies</option>
-                            <option>TV Shows</option>
-                            <option>Documentaries</option>
-                            <option>Animation</option>
-                            <option>Education</option>
-                            <option>Music</option>
-                        </select>
-                    </div>
-                </div>
+                        <FormControl fullWidth sx={{ mt: 3 }}>
+                            <InputLabel>Genre</InputLabel>
+                            <Select
+                                value={formData.genre}
+                                label="Genre"
+                                onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
+                            >
+                                <MenuItem value="Movies">Movies</MenuItem>
+                                <MenuItem value="TV Shows">TV Shows</MenuItem>
+                                <MenuItem value="Documentaries">Documentaries</MenuItem>
+                                <MenuItem value="Animation">Animation</MenuItem>
+                                <MenuItem value="Education">Education</MenuItem>
+                                <MenuItem value="Music">Music</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Grid>
 
-                <div className="section-right">
-                    <div className="input-group">
-                        <label>Video Title</label>
-                        <input
-                            required
-                            type="text"
-                            placeholder="Enter catchtitle"
-                            value={formData.title}
-                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                        />
-                    </div>
+                    <Grid item xs={12} lg={6}>
+                        <Stack spacing={3}>
+                            <TextField
+                                fullWidth
+                                label="Video Title"
+                                placeholder="Enter a catchy title"
+                                required
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                            />
 
-                    <div className="input-group">
-                        <label>Description</label>
-                        <textarea
-                            rows="5"
-                            placeholder="What's this video about?"
-                            value={formData.description}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        ></textarea>
-                    </div>
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={4}
+                                label="Description"
+                                placeholder="What is this video about?"
+                                value={formData.description}
+                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            />
 
-                    <div style={{ display: 'flex', gap: '2rem' }}>
-                        <div className="input-group" style={{ flex: 1 }}>
-                            <label>Visibility</label>
-                            <select value={formData.isPublic} onChange={(e) => setFormData({ ...formData, isPublic: e.target.value })}>
-                                <option value="true">Public</option>
-                                <option value="false">Private</option>
-                            </select>
-                        </div>
-                        <div className="input-group" style={{ flex: 1 }}>
-                            <label>Subscription</label>
-                            <select value={formData.requiresSubscription} onChange={(e) => setFormData({ ...formData, requiresSubscription: e.target.value })}>
-                                <option value="true">Premium Only</option>
-                                <option value="false">Free Access</option>
-                            </select>
-                        </div>
-                    </div>
+                            <Stack direction="row" spacing={2}>
+                                <FormControl fullWidth>
+                                    <InputLabel>Visibility</InputLabel>
+                                    <Select
+                                        value={formData.isPublic}
+                                        label="Visibility"
+                                        onChange={(e) => setFormData({ ...formData, isPublic: e.target.value })}
+                                    >
+                                        <MenuItem value="true">Public</MenuItem>
+                                        <MenuItem value="false">Private</MenuItem>
+                                    </Select>
+                                </FormControl>
+                                <FormControl fullWidth>
+                                    <InputLabel>Subscription</InputLabel>
+                                    <Select
+                                        value={formData.requiresSubscription}
+                                        label="Subscription"
+                                        onChange={(e) => setFormData({ ...formData, requiresSubscription: e.target.value })}
+                                    >
+                                        <MenuItem value="true">Premium Only</MenuItem>
+                                        <MenuItem value="false">Free Access</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </Stack>
 
-                    <div style={{ marginTop: '1rem' }}>
-                        {status === 'uploading' ? (
-                            <div style={{ marginBottom: '1rem' }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-                                    <span>Uploading...</span>
-                                    <span>{progress}%</span>
-                                </div>
-                                <div style={{ height: '8px', background: 'var(--surface-light)', borderRadius: '10px', overflow: 'hidden' }}>
-                                    <div style={{ width: `${progress}%`, height: '100%', background: 'var(--primary)', transition: 'width 0.3s ease' }} />
-                                </div>
-                            </div>
-                        ) : (
-                            <button disabled={!file} type="submit" className="btn btn-primary" style={{ width: '100%', padding: '1rem' }}>
-                                Start Processing
-                            </button>
-                        )}
-                    </div>
-                </div>
+                            <Box sx={{ pt: 2 }}>
+                                {status === 'uploading' ? (
+                                    <Stack spacing={1}>
+                                        <Stack direction="row" justifyContent="space-between">
+                                            <Typography variant="body2" fontWeight={600}>Uploading...</Typography>
+                                            <Typography variant="body2" fontWeight={700}>{progress}%</Typography>
+                                        </Stack>
+                                        <LinearProgress
+                                            variant="determinate"
+                                            value={progress}
+                                            sx={{ height: 10, borderRadius: 5 }}
+                                        />
+                                    </Stack>
+                                ) : (
+                                    <Button
+                                        fullWidth
+                                        variant="contained"
+                                        size="large"
+                                        type="submit"
+                                        disabled={!file}
+                                        sx={{ py: 1.8, fontSize: '1rem' }}
+                                    >
+                                        Start Processing
+                                    </Button>
+                                )}
+                            </Box>
+                        </Stack>
+                    </Grid>
+                </Grid>
             </form>
-        </motion.div>
+        </Paper>
     );
 };
 

@@ -1,13 +1,34 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Mail, Lock, User, UserPlus, AlertCircle } from 'lucide-react';
+import {
+    Box,
+    Typography,
+    Container,
+    TextField,
+    Button,
+    Alert,
+    Paper,
+    InputAdornment,
+    IconButton,
+    CircularProgress,
+    Stack
+} from '@mui/material';
+import {
+    Mail as MailIcon,
+    Lock as LockIcon,
+    Person as UserIcon,
+    Visibility,
+    VisibilityOff,
+    PersonAdd as RegisterIcon
+} from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
 const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const { register } = useAuth();
@@ -28,87 +49,140 @@ const Register = () => {
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
-            <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="glass"
-                style={{ width: '100%', maxWidth: '400px', padding: '3rem' }}
+        <Container maxWidth="sm">
+            <Box
+                sx={{
+                    minHeight: '80vh',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    py: 4
+                }}
             >
-                <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                    <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Create Account</h2>
-                    <p style={{ color: 'var(--text-muted)' }}>Join StreamVault today</p>
-                </div>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    style={{ width: '100%' }}
+                >
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: { xs: 4, md: 6 },
+                            width: '100%',
+                            borderRadius: 6,
+                            textAlign: 'center',
+                            border: '1px solid rgba(255,255,255,0.05)',
+                            background: 'rgba(30, 41, 59, 0.5)',
+                            backdropFilter: 'blur(10px)',
+                        }}
+                    >
+                        <Box sx={{ mb: 4 }}>
+                            <Typography variant="h4" gutterBottom fontWeight={800}>
+                                Create Account
+                            </Typography>
+                            <Typography variant="body1" color="text.secondary">
+                                Join StreamVault today
+                            </Typography>
+                        </Box>
 
-                {error && (
-                    <div style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid var(--error)', color: 'var(--error)', padding: '0.75rem', borderRadius: '8px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}>
-                        <AlertCircle size={18} />
-                        {error}
-                    </div>
-                )}
-
-                <form onSubmit={handleSubmit}>
-                    <div className="input-group">
-                        <label>Full Name</label>
-                        <div style={{ position: 'relative' }}>
-                            <User size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                            <input
-                                type="text"
-                                required
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                style={{ paddingLeft: '2.5rem' }}
-                                placeholder="John Doe"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="input-group">
-                        <label>Email Address</label>
-                        <div style={{ position: 'relative' }}>
-                            <Mail size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                            <input
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                style={{ paddingLeft: '2.5rem' }}
-                                placeholder="you@example.com"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="input-group">
-                        <label>Password</label>
-                        <div style={{ position: 'relative' }}>
-                            <Lock size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-muted)' }} />
-                            <input
-                                type="password"
-                                required
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                style={{ paddingLeft: '2.5rem' }}
-                                placeholder="••••••••"
-                                minLength={6}
-                            />
-                        </div>
-                    </div>
-
-                    <button disabled={loading} className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>
-                        {loading ? 'Creating Account...' : (
-                            <>
-                                <UserPlus size={20} />
-                                Sign Up
-                            </>
+                        {error && (
+                            <Alert severity="error" sx={{ mb: 3, borderRadius: 2 }}>
+                                {error}
+                            </Alert>
                         )}
-                    </button>
-                </form>
 
-                <p style={{ textAlign: 'center', marginTop: '2rem', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-                    Already have an account? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Login here</Link>
-                </p>
-            </motion.div>
-        </div>
+                        <form onSubmit={handleSubmit}>
+                            <Stack spacing={3}>
+                                <TextField
+                                    fullWidth
+                                    label="Full Name"
+                                    type="text"
+                                    variant="outlined"
+                                    required
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <UserIcon sx={{ color: 'text.secondary' }} />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="Email Address"
+                                    type="email"
+                                    variant="outlined"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <MailIcon sx={{ color: 'text.secondary' }} />
+                                            </InputAdornment>
+                                        ),
+                                    }}
+                                />
+
+                                <TextField
+                                    fullWidth
+                                    label="Password"
+                                    type={showPassword ? 'text' : 'password'}
+                                    variant="outlined"
+                                    required
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    inputProps={{ minLength: 6 }}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <LockIcon sx={{ color: 'text.secondary' }} />
+                                            </InputAdornment>
+                                        ),
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <IconButton
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    edge="end"
+                                                >
+                                                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                                                </IconButton>
+                                            </InputAdornment>
+                                        )
+                                    }}
+                                />
+
+                                <Button
+                                    fullWidth
+                                    variant="contained"
+                                    size="large"
+                                    type="submit"
+                                    disabled={loading}
+                                    sx={{ py: 1.5, mt: 2 }}
+                                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <RegisterIcon />}
+                                >
+                                    {loading ? 'Creating Account...' : 'Sign Up'}
+                                </Button>
+                            </Stack>
+                        </form>
+
+                        <Box sx={{ mt: 4 }}>
+                            <Typography variant="body2" color="text.secondary">
+                                Already have an account?{' '}
+                                <Link to="/login" style={{ color: '#6366f1', textDecoration: 'none', fontWeight: 600 }}>
+                                    Login here
+                                </Link>
+                            </Typography>
+                        </Box>
+                    </Paper>
+                </motion.div>
+            </Box>
+        </Container>
     );
 };
 

@@ -1,7 +1,30 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
-import { User, Mail, Shield, History, Settings, ExternalLink, Trash2 } from 'lucide-react';
+import {
+    Box,
+    Typography,
+    Container,
+    Grid,
+    Paper,
+    Avatar,
+    Stack,
+    Divider,
+    Button,
+    IconButton,
+    LinearProgress,
+    List,
+    ListItem
+} from '@mui/material';
+import {
+    Mail as MailIcon,
+    Shield as ShieldIcon,
+    History as HistoryIcon,
+    Settings as SettingsIcon,
+    Launch as ExternalLinkIcon,
+    DeleteSweep as TrashIcon,
+    PlayArrow as PlayIcon
+} from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
@@ -35,135 +58,226 @@ const Profile = () => {
         }
     };
 
+    const formatTime = (time) => {
+        if (!time || isNaN(time)) return "0:00";
+        const m = Math.floor(time / 60);
+        const s = Math.floor(time % 60);
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+    };
+
     return (
-        <div style={{ padding: '3rem 2rem', maxWidth: '1200px', margin: '0 auto' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '3rem' }}>
+        <Container maxWidth="xl" sx={{ py: 6 }}>
+            <Grid container spacing={5}>
                 {/* User Info Card */}
-                <aside>
+                <Grid item xs={12} md={4} lg={3}>
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="glass"
-                        style={{ padding: '2.5rem', textAlign: 'center' }}
                     >
-                        <div style={{
-                            width: '100px',
-                            height: '100px',
-                            borderRadius: '50%',
-                            background: 'linear-gradient(135deg, var(--primary), var(--accent))',
-                            margin: '0 auto 1.5rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '3rem',
-                            color: 'white',
-                            fontWeight: 700
-                        }}>
-                            {user.name.charAt(0)}
-                        </div>
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                p: 4,
+                                textAlign: 'center',
+                                borderRadius: 6,
+                                bgcolor: 'rgba(30, 41, 59, 0.5)',
+                                backdropFilter: 'blur(10px)',
+                                border: '1px solid rgba(255,255,255,0.05)'
+                            }}
+                        >
+                            <Avatar
+                                sx={{
+                                    width: 100,
+                                    height: 100,
+                                    margin: '0 auto 2rem',
+                                    fontSize: '2.5rem',
+                                    fontWeight: 700,
+                                    bgcolor: 'primary.main',
+                                    background: 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+                                    boxShadow: '0 10px 20px rgba(99, 102, 241, 0.3)'
+                                }}
+                            >
+                                {user.name.charAt(0)}
+                            </Avatar>
 
-                        <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>{user.name}</h2>
-                        <p style={{ color: 'var(--text-muted)', marginBottom: '2rem' }}>Member since {new Date(user.createdAt).getFullYear()}</p>
+                            <Typography variant="h5" fontWeight={800} gutterBottom>
+                                {user.name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+                                Member since {new Date(user.createdAt).getFullYear()}
+                            </Typography>
 
-                        <div style={{ textAlign: 'left', display: 'flex', flexDirection: 'column', gap: '1rem', borderTop: '1px solid var(--glass-border)', paddingTop: '2rem' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-muted)' }}>
-                                <Mail size={18} />
-                                <span>{user.email}</span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-muted)' }}>
-                                <Shield size={18} />
-                                <span style={{ textTransform: 'capitalize' }}>{user.role} Account</span>
-                            </div>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--text-muted)' }}>
-                                <Settings size={18} />
-                                <span>Account Settings</span>
-                            </div>
-                        </div>
+                            <Divider sx={{ mb: 3, opacity: 0.1 }} />
 
-                        <div style={{ marginTop: '2.5rem', padding: '1.5rem', background: 'rgba(99, 102, 241, 0.1)', borderRadius: '12px', border: '1px solid rgba(99, 102, 241, 0.2)' }}>
-                            <p style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 700, letterSpacing: '1px', marginBottom: '0.5rem' }}>CURRENT PLAN</p>
-                            <h4 style={{ fontSize: '1.2rem', marginBottom: '1rem' }}>{user.subscription?.planName || 'Free'}</h4>
-                            <Link to="/subscriptions" style={{ fontSize: '0.85rem', color: 'var(--text)', textDecoration: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px', fontWeight: 600 }}>
-                                Manage Subscription <ExternalLink size={14} />
-                            </Link>
-                        </div>
+                            <Stack spacing={2} sx={{ textAlign: 'left', mb: 4 }}>
+                                <Stack direction="row" spacing={1.5} alignItems="center" color="text.secondary">
+                                    <MailIcon fontSize="small" />
+                                    <Typography variant="body2">{user.email}</Typography>
+                                </Stack>
+                                <Stack direction="row" spacing={1.5} alignItems="center" color="text.secondary">
+                                    <ShieldIcon fontSize="small" />
+                                    <Typography variant="body2" sx={{ textTransform: 'capitalize' }}>
+                                        {user.role} Account
+                                    </Typography>
+                                </Stack>
+                                <Stack direction="row" spacing={1.5} alignItems="center" color="text.secondary">
+                                    <SettingsIcon fontSize="small" />
+                                    <Typography variant="body2">Account Settings</Typography>
+                                </Stack>
+                            </Stack>
+
+                            <Box
+                                sx={{
+                                    p: 2.5,
+                                    borderRadius: 4,
+                                    bgcolor: 'rgba(99, 102, 241, 0.08)',
+                                    border: '1px solid rgba(99, 102, 241, 0.2)'
+                                }}
+                            >
+                                <Typography variant="caption" fontWeight={800} color="primary" sx={{ letterSpacing: 1.5, display: 'block', mb: 1 }}>
+                                    CURRENT PLAN
+                                </Typography>
+                                <Typography variant="h6" fontWeight={700} gutterBottom>
+                                    {user.subscription?.planName || 'Free'}
+                                </Typography>
+                                <Button
+                                    component={Link}
+                                    to="/subscriptions"
+                                    size="small"
+                                    endIcon={<ExternalLinkIcon />}
+                                    sx={{ textTransform: 'none', fontWeight: 600 }}
+                                >
+                                    Manage Subscription
+                                </Button>
+                            </Box>
+                        </Paper>
                     </motion.div>
-                </aside>
+                </Grid>
 
                 {/* Watch History */}
-                <main>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                        <h2 style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                            <History size={24} /> Watch History
-                        </h2>
-                        {history.length > 0 && (
-                            <button
-                                onClick={clearHistory}
-                                style={{ background: 'transparent', border: 'none', color: 'var(--error)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', fontWeight: 600 }}
-                            >
-                                <Trash2 size={16} /> Clear All
-                            </button>
-                        )}
-                    </div>
+                <Grid item xs={12} md={8} lg={9}>
+                    <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Stack direction="row" spacing={2} alignItems="center">
+                            <Avatar sx={{ bgcolor: 'rgba(255,255,255,0.05)', color: 'text.primary' }}>
+                                <HistoryIcon />
+                            </Avatar>
+                            <Typography variant="h5" fontWeight={800}>Watch History</Typography>
+                        </Stack>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        {history.length > 0 && (
+                            <Button
+                                color="error"
+                                onClick={clearHistory}
+                                startIcon={<TrashIcon />}
+                                sx={{ fontWeight: 600 }}
+                            >
+                                Clear All
+                            </Button>
+                        )}
+                    </Box>
+
+                    <Stack spacing={3}>
                         {loading ? (
-                            <p>Loading history...</p>
+                            <Box sx={{ py: 10, textAlign: 'center' }}>
+                                <Typography color="text.secondary">Loading history...</Typography>
+                            </Box>
                         ) : history.length > 0 ? (
                             history.map((item, index) => (
                                 <motion.div
                                     key={item._id}
-                                    initial={{ opacity: 0, y: 10 }}
+                                    initial={{ opacity: 0, y: 15 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: index * 0.05 }}
-                                    className="glass"
-                                    style={{ display: 'flex', gap: '1.5rem', padding: '1rem', overflow: 'hidden' }}
                                 >
-                                    <div style={{ width: '200px', flexShrink: 0, borderRadius: '8px', overflow: 'hidden', height: '110px' }}>
-                                        <img
-                                            src={item.video?.thumbnail ? `http://localhost:5000/api/stream/thumbnail/${item.video.thumbnail.split('/').pop()}` : 'https://placehold.co/600x400/1e293b/f8fafc?text=Video'}
-                                            alt={item.video?.title}
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                        />
-                                    </div>
-                                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                                        <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>{item.video?.title}</h3>
-                                        <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1rem' }}>
-                                            Last watched: {new Date(item.lastWatched).toLocaleDateString()}
-                                        </p>
+                                    <Paper
+                                        elevation={0}
+                                        sx={{
+                                            p: 2,
+                                            display: 'flex',
+                                            gap: 3,
+                                            borderRadius: 4,
+                                            bgcolor: 'rgba(30, 41, 59, 0.5)',
+                                            border: '1px solid rgba(255,255,255,0.05)',
+                                            transition: 'transform 0.2s ease',
+                                            '&:hover': {
+                                                transform: 'translateY(-4px)',
+                                                bgcolor: 'rgba(30, 41, 59, 0.7)'
+                                            }
+                                        }}
+                                    >
+                                        <Box sx={{ width: { xs: 120, sm: 200 }, flexShrink: 0, borderRadius: 2, overflow: 'hidden', height: { xs: 70, sm: 110 } }}>
+                                            <Box
+                                                component="img"
+                                                src={item.video?.thumbnail ? `http://localhost:5000/api/stream/thumbnail/${item.video.thumbnail.split('/').pop()}` : 'https://placehold.co/600x400/1e293b/f8fafc?text=Video'}
+                                                alt={item.video?.title}
+                                                sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            />
+                                        </Box>
 
-                                        <div style={{ width: '100%' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', marginBottom: '0.5rem' }}>
-                                                <span>Progress: {Math.round((item.progress / (item.video?.duration || 1)) * 100)}%</span>
-                                                <span>{formatTime(item.progress)} / {formatTime(item.video?.duration)}</span>
-                                            </div>
-                                            <div style={{ height: '4px', background: 'var(--surface-light)', borderRadius: '10px' }}>
-                                                <div style={{ width: `${(item.progress / (item.video?.duration || 1)) * 100}%`, height: '100%', background: 'var(--primary)', borderRadius: '10px' }} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                        <Link to={`/watch/${item.video?._id}`} className="btn btn-primary" style={{ padding: '0.5rem 1.25rem' }}>Resume</Link>
-                                    </div>
+                                        <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                            <Typography variant="h6" fontWeight={700} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>
+                                                {item.video?.title}
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                                                Last watched: {new Date(item.lastWatched).toLocaleDateString()}
+                                            </Typography>
+
+                                            <Box>
+                                                <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
+                                                    <Typography variant="caption" color="text.secondary" fontWeight={600}>
+                                                        Progress: {Math.round((item.progress / (item.video?.duration || 1)) * 100)}%
+                                                    </Typography>
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {formatTime(item.progress)} / {formatTime(item.video?.duration)}
+                                                    </Typography>
+                                                </Stack>
+                                                <LinearProgress
+                                                    variant="determinate"
+                                                    value={(item.progress / (item.video?.duration || 1)) * 100}
+                                                    sx={{ height: 4, borderRadius: 2 }}
+                                                />
+                                            </Box>
+                                        </Box>
+
+                                        <Box sx={{ display: 'flex', alignItems: 'center', pr: 1 }}>
+                                            <Button
+                                                variant="contained"
+                                                component={Link}
+                                                to={`/watch/${item.video?._id}`}
+                                                startIcon={<PlayIcon />}
+                                                sx={{
+                                                    display: { xs: 'none', sm: 'inline-flex' },
+                                                    borderRadius: 3,
+                                                    px: 3
+                                                }}
+                                            >
+                                                Resume
+                                            </Button>
+                                            <IconButton
+                                                component={Link}
+                                                to={`/watch/${item.video?._id}`}
+                                                color="primary"
+                                                sx={{ display: { xs: 'inline-flex', sm: 'none' } }}
+                                            >
+                                                <PlayIcon />
+                                            </IconButton>
+                                        </Box>
+                                    </Paper>
                                 </motion.div>
                             ))
                         ) : (
-                            <div className="glass" style={{ padding: '4rem', textAlign: 'center', color: 'var(--text-muted)' }}>
-                                <p>No watch history yet. Start exploring videos!</p>
-                            </div>
+                            <Paper sx={{ p: 8, textAlign: 'center', borderRadius: 6, bgcolor: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.1)' }}>
+                                <Typography color="text.secondary">
+                                    No watch history yet. Start exploring videos!
+                                </Typography>
+                                <Button component={Link} to="/" sx={{ mt: 2 }}>Explore Now</Button>
+                            </Paper>
                         )}
-                    </div>
-                </main>
-            </div>
-        </div>
+                    </Stack>
+                </Grid>
+            </Grid>
+        </Container>
     );
-};
-
-const formatTime = (time) => {
-    if (!time || isNaN(time)) return "0:00";
-    const m = Math.floor(time / 60);
-    const s = Math.floor(time % 60);
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
 };
 
 export default Profile;

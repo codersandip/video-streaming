@@ -1,7 +1,30 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
-import { Play, Flame, Clock, TrendingUp, Search } from 'lucide-react';
+import {
+    Box,
+    Typography,
+    Container,
+    Grid,
+    Card,
+    CardMedia,
+    CardContent,
+    Button,
+    TextField,
+    InputAdornment,
+    Chip,
+    Skeleton,
+    Stack,
+    useTheme
+} from '@mui/material';
+import {
+    Search as SearchIcon,
+    PlayArrow as PlayIcon,
+    LocalFireDepartment as FlameIcon,
+    AccessTime as ClockIcon,
+    TrendingUp as TrendingIcon,
+    Add as AddIcon
+} from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
 const Home = () => {
@@ -10,6 +33,7 @@ const Home = () => {
     const [genres, setGenres] = useState([]);
     const [selectedGenre, setSelectedGenre] = useState('all');
     const [search, setSearch] = useState('');
+    const theme = useTheme();
 
     useEffect(() => {
         fetchVideos();
@@ -45,151 +69,223 @@ const Home = () => {
         }
     };
 
+    const formatDuration = (sec) => {
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = Math.floor(sec % 60);
+        if (h > 0) return `${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        return `${m}:${s < 10 ? '0' : ''}${s}`;
+    };
+
     return (
-        <div className="home-page" style={{ padding: '2rem' }}>
+        <Container maxWidth="xl" sx={{ pb: 8 }}>
             {/* Hero Section */}
-            <motion.section
+            <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="hero"
-                style={{
-                    height: '400px',
-                    borderRadius: '24px',
-                    background: 'linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.4)), url("https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=2000")',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    padding: '0 4rem',
-                    marginBottom: '3rem',
-                    position: 'relative',
-                    overflow: 'hidden'
-                }}
+                transition={{ duration: 0.6 }}
             >
-                <div style={{ position: 'relative', zIndex: 2 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--secondary)', marginBottom: '1rem', fontWeight: 600 }}>
-                        <Flame size={20} />
-                        <span>TRENDING THIS WEEK</span>
-                    </div>
-                    <h1 style={{ fontSize: '3.5rem', lineHeight: 1.1, marginBottom: '1.5rem', maxWidth: '600px' }}>
-                        Unleash the Power of <span style={{ color: 'var(--primary)' }}>Self-Hosted</span> Streaming
-                    </h1>
-                    <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginBottom: '2rem', maxWidth: '500px' }}>
-                        Experience lightning fast playback with HLS technology. No third-party tracking, no limits.
-                    </p>
-                    <div style={{ display: 'flex', gap: '1rem' }}>
-                        <Link to={videos[0] ? `/watch/${videos[0]._id}` : '#'} className="btn btn-primary" style={{ padding: '1rem 2rem' }}>
-                            <Play size={20} fill="white" />
-                            Watch Now
-                        </Link>
-                        <button className="btn btn-outline" style={{ padding: '1rem 2rem' }}>
-                            Add to List
-                        </button>
-                    </div>
-                </div>
-            </motion.section >
+                <Box
+                    sx={{
+                        height: { xs: 'auto', md: '450px' },
+                        borderRadius: 6,
+                        background: `linear-gradient(to right, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.4)), url("https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&q=80&w=2000")`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        px: { xs: 4, md: 8 },
+                        py: { xs: 8, md: 0 },
+                        mb: 6,
+                        position: 'relative',
+                        overflow: 'hidden',
+                        boxShadow: '0 20px 50px rgba(0,0,0,0.5)'
+                    }}
+                >
+                    <Box sx={{ position: 'relative', zIndex: 2, maxWidth: '700px' }}>
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ color: 'secondary.main', mb: 2 }}>
+                            <FlameIcon fontSize="small" />
+                            <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 2 }}>
+                                TRENDING THIS WEEK
+                            </Typography>
+                        </Stack>
+                        <Typography variant="h2" sx={{ mb: 2, fontSize: { xs: '2.5rem', md: '3.5rem' } }}>
+                            Unleash the Power of <Box component="span" sx={{ color: 'primary.main' }}>Self-Hosted</Box> Streaming
+                        </Typography>
+                        <Typography variant="h6" sx={{ color: 'text.secondary', mb: 4, fontWeight: 400, maxWidth: '500px' }}>
+                            Experience lightning fast playback with HLS technology. No third-party tracking, no limits.
+                        </Typography>
+                        <Stack direction="row" spacing={2}>
+                            <Button
+                                variant="contained"
+                                size="large"
+                                startIcon={<PlayIcon />}
+                                component={Link}
+                                to={videos[0] ? `/watch/${videos[0]._id}` : '#'}
+                                sx={{ px: 4, py: 1.5 }}
+                            >
+                                Watch Now
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                size="large"
+                                startIcon={<AddIcon />}
+                                sx={{ px: 4, py: 1.5, borderColor: 'rgba(255,255,255,0.2)', color: 'white' }}
+                            >
+                                Add to List
+                            </Button>
+                        </Stack>
+                    </Box>
+                </Box>
+            </motion.div>
 
             {/* Filter & Search */}
-            < div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
-                <div style={{ display: 'flex', gap: '0.75rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+            <Stack
+                direction={{ xs: 'column', md: 'row' }}
+                justifyContent="space-between"
+                alignItems={{ xs: 'stretch', md: 'center' }}
+                spacing={3}
+                sx={{ mb: 6 }}
+            >
+                <Box sx={{ display: 'flex', gap: 1, overflowX: 'auto', pb: 1, '&::-webkit-scrollbar': { display: 'none' } }}>
                     {genres.map(genre => (
-                        <button
+                        <Chip
                             key={genre}
+                            label={genre.toUpperCase()}
                             onClick={() => setSelectedGenre(genre)}
-                            className={`btn ${selectedGenre === genre ? 'btn-primary' : 'btn-outline'}`}
-                            style={{ textTransform: 'capitalize', padding: '0.5rem 1.25rem' }}
-                        >
-                            {genre}
-                        </button>
+                            color={selectedGenre === genre ? "primary" : "default"}
+                            variant={selectedGenre === genre ? "filled" : "outlined"}
+                            sx={{
+                                px: 1,
+                                fontWeight: 700,
+                                py: 2,
+                                borderRadius: 2,
+                                background: selectedGenre === genre ? undefined : 'rgba(255,255,255,0.05)',
+                                borderColor: selectedGenre === genre ? undefined : 'rgba(255,255,255,0.1)'
+                            }}
+                        />
                     ))}
-                </div>
+                </Box>
 
-                <div className="glass" style={{ display: 'flex', alignItems: 'center', padding: '0.5rem 1rem', width: '300px' }}>
-                    <Search size={18} color="var(--text-muted)" />
-                    <input
-                        type="text"
-                        placeholder="Search videos..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        onKeyDown={handleSearch}
-                        style={{ background: 'transparent', border: 'none', color: 'white', padding: '0.5rem', width: '100%', outline: 'none' }}
-                    />
-                </div>
-            </div >
+                <TextField
+                    placeholder="Search videos..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    onKeyDown={handleSearch}
+                    variant="outlined"
+                    size="small"
+                    sx={{ width: { xs: '100%', md: '350px' } }}
+                    InputProps={{
+                        startAdornment: (
+                            <InputAdornment position="start">
+                                <SearchIcon sx={{ color: 'text.secondary' }} />
+                            </InputAdornment>
+                        ),
+                        sx: {
+                            bgcolor: 'rgba(255,255,255,0.05)',
+                            borderRadius: 3,
+                            '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' }
+                        }
+                    }}
+                />
+            </Stack>
 
             {/* Video Grid */}
-            < div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
-                {
-                    loading ? (
-                        [1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                            <div key={i} style={{ borderRadius: '12px', background: 'var(--surface)', height: '220px', animation: 'pulse 1.5s infinite ease-in-out' }} />
-                        ))
-                    ) : videos.length > 0 ? (
-                        videos.map((video, index) => (
+            <Grid container spacing={3}>
+                {loading ? (
+                    Array.from(new Array(8)).map((_, index) => (
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
+                            <Box sx={{ borderRadius: 4, overflow: 'hidden' }}>
+                                <Skeleton variant="rectangular" height={180} sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                <Box sx={{ pt: 2 }}>
+                                    <Skeleton width="80%" sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                    <Skeleton width="40%" sx={{ bgcolor: 'rgba(255,255,255,0.05)' }} />
+                                </Box>
+                            </Box>
+                        </Grid>
+                    ))
+                ) : videos.length > 0 ? (
+                    videos.map((video, index) => (
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={video._id}>
                             <motion.div
-                                key={video._id}
                                 initial={{ opacity: 0, scale: 0.9 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: index * 0.05 }}
-                                className="video-card"
                             >
-                                <Link to={`/watch/${video._id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                                    <img
-                                        src={video.thumbnail ? `http://localhost:5000/api/stream/thumbnail/${video.thumbnail.split('/').pop()}` : 'https://placehold.co/600x400/1e293b/f8fafc?text=Video'}
-                                        alt={video.title}
-                                        className="thumbnail"
-                                    />
-                                    <div className="content">
-                                        <h3 className="title">{video.title}</h3>
-                                        <div className="meta">
-                                            <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                <Clock size={14} /> {formatDuration(video.duration)}
-                                            </span>
-                                            <span>{new Date(video.createdAt).toLocaleDateString()}</span>
-                                        </div>
-                                    </div>
-                                    {video.requiresSubscription && (
-                                        <div style={{
+                                <Card
+                                    component={Link}
+                                    to={`/watch/${video._id}`}
+                                    sx={{
+                                        height: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        textDecoration: 'none',
+                                        transition: 'all 0.3s ease',
+                                        position: 'relative',
+                                        overflow: 'hidden',
+                                        '&:hover': {
+                                            transform: 'translateY(-8px)',
+                                            boxShadow: '0 12px 30px rgba(0,0,0,0.4)',
+                                            '& .card-media': { transform: 'scale(1.1)' }
+                                        }
+                                    }}
+                                >
+                                    <Box sx={{ position: 'relative', overflow: 'hidden', aspectRatio: '16/9' }}>
+                                        <CardMedia
+                                            className="card-media"
+                                            component="img"
+                                            image={video.thumbnail ? `http://localhost:5000/api/stream/thumbnail/${video.thumbnail.split('/').pop()}` : 'https://placehold.co/600x400/1e293b/f8fafc?text=Video'}
+                                            alt={video.title}
+                                            sx={{ transition: 'transform 0.5s ease', objectFit: 'cover', height: '100%' }}
+                                        />
+                                        {video.requiresSubscription && (
+                                            <Chip
+                                                label="PREMIUM"
+                                                size="small"
+                                                color="secondary"
+                                                sx={{ position: 'absolute', top: 12, right: 12, fontWeight: 800, fontSize: '0.65rem' }}
+                                            />
+                                        )}
+                                        <Box sx={{
                                             position: 'absolute',
-                                            top: '10px',
-                                            right: '10px',
-                                            background: 'var(--secondary)',
-                                            padding: '4px 8px',
-                                            borderRadius: '6px',
-                                            fontSize: '0.7rem',
-                                            fontWeight: 700
-                                        }}>PREMIUM</div>
-                                    )}
-                                </Link>
+                                            bottom: 8,
+                                            right: 8,
+                                            bgcolor: 'rgba(0,0,0,0.8)',
+                                            color: 'white',
+                                            px: 1,
+                                            borderRadius: 1,
+                                            fontSize: '0.75rem'
+                                        }}>
+                                            {formatDuration(video.duration)}
+                                        </Box>
+                                    </Box>
+                                    <CardContent sx={{ flexGrow: 1, pt: 2 }}>
+                                        <Typography variant="h6" sx={{ fontSize: '1.1rem', mb: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                            {video.title}
+                                        </Typography>
+                                        <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                            <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                <ClockIcon sx={{ fontSize: 14 }} /> {new Date(video.createdAt).toLocaleDateString()}
+                                            </Typography>
+                                            <TrendingIcon sx={{ fontSize: 16, color: 'primary.main' }} />
+                                        </Stack>
+                                    </CardContent>
+                                </Card>
                             </motion.div>
-                        ))
-                    ) : (
-                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '4rem', color: 'var(--text-muted)' }}>
-                            <h3>No videos found matching your criteria.</h3>
-                        </div>
-                    )
-                }
-            </div >
-
-            <style dangerouslySetInnerHTML={{
-                __html: `
-        @keyframes pulse {
-          0% { opacity: 0.5; }
-          50% { opacity: 0.8; }
-          100% { opacity: 0.5; }
-        }
-      `}} />
-        </div >
+                        </Grid>
+                    ))
+                ) : (
+                    <Grid item xs={12}>
+                        <Box sx={{ textAlign: 'center', py: 10 }}>
+                            <Typography variant="h5" color="text.secondary">No videos found matching your criteria.</Typography>
+                            <Button variant="outlined" sx={{ mt: 2 }} onClick={() => setSelectedGenre('all')}>Reset Filters</Button>
+                        </Box>
+                    </Grid>
+                )}
+            </Grid>
+        </Container>
     );
-};
-
-const formatDuration = (sec) => {
-    const h = Math.floor(sec / 3600);
-    const m = Math.floor((sec % 3600) / 60);
-    const s = Math.floor(sec % 60);
-    if (h > 0) return `${h}:${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
 };
 
 export default Home;

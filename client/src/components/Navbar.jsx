@@ -1,89 +1,209 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Play, LogOut, User, LayoutDashboard, CreditCard } from 'lucide-react';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Avatar,
+  Menu,
+  MenuItem,
+  Box,
+  Container,
+  Tooltip,
+  Divider,
+  ListItemIcon
+} from '@mui/material';
+import {
+  PlayArrow as PlayIcon,
+  Logout as LogoutIcon,
+  Person as UserIcon,
+  Dashboard as DashboardIcon,
+  Explore as ExploreIcon,
+  Subscriptions as PlansIcon
+} from '@mui/icons-material';
 
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleOpenUserMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseUserMenu = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = () => {
+    handleCloseUserMenu();
     logout();
     navigate('/login');
   };
 
+  const handleProfile = () => {
+    handleCloseUserMenu();
+    navigate('/profile');
+  };
+
+  const handleAdmin = () => {
+    handleCloseUserMenu();
+    navigate('/admin');
+  };
+
   return (
-    <nav className="glass" style={{
-      position: 'sticky',
-      top: '1rem',
-      margin: '0 1rem',
-      zIndex: 1000,
-      padding: '0.75rem 2rem',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      marginTop: '1rem'
-    }}>
-      <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit' }}>
-        <div style={{
-          background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
-          padding: '0.5rem',
-          borderRadius: '10px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <Play size={20} fill="white" color="white" />
-        </div>
-        <span style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.5px' }}>
-          Stream<span style={{ color: 'var(--primary)' }}>Vault</span>
-        </span>
-      </Link>
+    <AppBar position="sticky" sx={{ borderRadius: 0, mb: 4, bgcolor: 'background.default' }}>
+      <Container maxWidth="xl">
+        <Toolbar disableGutters>
+          <Box
+            component={Link}
+            to="/"
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              textDecoration: 'none',
+              color: 'inherit',
+              mr: 4
+            }}
+          >
+            <Box
+              sx={{
+                background: 'linear-gradient(135deg, primary.main, secondary.main)',
+                p: 0.5,
+                borderRadius: 2,
+                display: 'flex',
+                mr: 1
+              }}
+            >
+              <PlayIcon sx={{ color: 'white' }} />
+            </Box>
+            <Typography
+              variant="h6"
+              noWrap
+              sx={{
+                fontWeight: 800,
+                letterSpacing: '-0.5px',
+                display: { xs: 'none', md: 'flex' },
+              }}
+            >
+              Stream<Box component="span" sx={{ color: 'primary.main' }}>Vault</Box>
+            </Typography>
+          </Box>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
-        <Link to="/" className="nav-link">Explore</Link>
-        <Link to="/subscriptions" className="nav-link">Plans</Link>
+          <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
+            <Button
+              component={Link}
+              to="/"
+              startIcon={<ExploreIcon />}
+              sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary' } }}
+            >
+              Explore
+            </Button>
+            <Button
+              component={Link}
+              to="/subscriptions"
+              startIcon={<PlansIcon />}
+              sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary' } }}
+            >
+              Plans
+            </Button>
+          </Box>
 
-        {user ? (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            {user.role === 'admin' && (
-              <Link to="/admin" className="btn btn-outline" style={{ padding: '0.5rem 1rem' }}>
-                <LayoutDashboard size={18} />
-                Admin
-              </Link>
+          <Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center', gap: 2 }}>
+            {user ? (
+              <>
+                {user.role === 'admin' && (
+                  <Button
+                    variant="outlined"
+                    startIcon={<DashboardIcon />}
+                    onClick={handleAdmin}
+                    sx={{ display: { xs: 'none', sm: 'flex' } }}
+                  >
+                    Admin
+                  </Button>
+                )}
+                <Tooltip title="Open settings">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0.5, border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <Avatar
+                      alt={user.name}
+                      sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}
+                    >
+                      {user.name.charAt(0)}
+                    </Avatar>
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: '45px' }}
+                  id="menu-appbar"
+                  anchorEl={anchorEl}
+                  anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                  open={Boolean(anchorEl)}
+                  onClose={handleCloseUserMenu}
+                  PaperProps={{
+                    sx: {
+                      width: 200,
+                      mt: 1.5,
+                      '&:before': {
+                        content: '""',
+                        display: 'block',
+                        position: 'absolute',
+                        top: 0,
+                        right: 14,
+                        width: 10,
+                        height: 10,
+                        bgcolor: 'background.paper',
+                        transform: 'translateY(-50%) rotate(45deg)',
+                        zIndex: 0,
+                      },
+                    },
+                  }}
+                >
+                  <Box sx={{ px: 2, py: 1 }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{user.name}</Typography>
+                    <Typography variant="body2" color="text.secondary">{user.email}</Typography>
+                  </Box>
+                  <Divider />
+                  <MenuItem onClick={handleProfile}>
+                    <ListItemIcon><UserIcon fontSize="small" /></ListItemIcon>
+                    Profile
+                  </MenuItem>
+                  {user.role === 'admin' && (
+                    <MenuItem onClick={handleAdmin} sx={{ display: { xs: 'flex', sm: 'none' } }}>
+                      <ListItemIcon><DashboardIcon fontSize="small" /></ListItemIcon>
+                      Admin
+                    </MenuItem>
+                  )}
+                  <MenuItem onClick={handleLogout}>
+                    <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
+                    Logout
+                  </MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <Button component={Link} to="/login" variant="outlined">
+                  Login
+                </Button>
+                <Button component={Link} to="/register" variant="contained">
+                  Join Now
+                </Button>
+              </Box>
             )}
-            <div className="user-menu" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <Link to="/profile" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', color: 'inherit' }}>
-                <div style={{ width: '35px', height: '35px', borderRadius: '50%', background: 'var(--surface-light)', display: 'flex', alignItems: 'center', justifyItems: 'center' }}>
-                  <User size={20} style={{ margin: 'auto' }} />
-                </div>
-                <span style={{ fontWeight: 600 }}>{user.name}</span>
-              </Link>
-              <button onClick={handleLogout} className="btn btn-outline" style={{ padding: '0.5rem', border: 'none', background: 'transparent' }}>
-                <LogOut size={18} />
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <Link to="/login" className="btn btn-outline">Login</Link>
-            <Link to="/register" className="btn btn-primary">Join Now</Link>
-          </div>
-        )}
-      </div>
-
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        .nav-link {
-          text-decoration: none;
-          color: var(--text-muted);
-          font-weight: 500;
-          transition: color 0.3s ease;
-        }
-        .nav-link:hover {
-          color: var(--text);
-        }
-      `}} />
-    </nav >
+          </Box>
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
 };
 
