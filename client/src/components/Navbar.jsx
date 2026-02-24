@@ -14,7 +14,9 @@ import {
   Container,
   Tooltip,
   Divider,
-  ListItemIcon
+  ListItemIcon,
+  alpha,
+  useTheme
 } from '@mui/material';
 import {
   PlayArrow as PlayIcon,
@@ -28,6 +30,7 @@ import {
 const Navbar = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState(null);
 
   const handleOpenUserMenu = (event) => {
@@ -55,9 +58,19 @@ const Navbar = () => {
   };
 
   return (
-    <AppBar position="sticky" sx={{ borderRadius: 0, mb: 4, bgcolor: 'background.default' }}>
+    <AppBar
+      position="sticky"
+      sx={{
+        borderRadius: 0,
+        mb: 0,
+        bgcolor: alpha(theme.palette.background.default, 0.7),
+        backdropFilter: 'blur(20px)',
+        borderBottom: `1px solid ${alpha(theme.palette.text.primary, 0.08)}`,
+        zIndex: theme.zIndex.drawer + 1
+      }}
+    >
       <Container maxWidth="xl">
-        <Toolbar disableGutters>
+        <Toolbar disableGutters sx={{ height: 80 }}>
           <Box
             component={Link}
             to="/"
@@ -66,39 +79,50 @@ const Navbar = () => {
               alignItems: 'center',
               textDecoration: 'none',
               color: 'inherit',
-              mr: 4
+              mr: 6
             }}
           >
             <Box
               sx={{
-                background: 'linear-gradient(135deg, primary.main, secondary.main)',
-                p: 0.5,
-                borderRadius: 2,
+                background: 'linear-gradient(135deg, #6366f1 0%, #ec4899 100%)',
+                p: 0.8,
+                borderRadius: 2.5,
                 display: 'flex',
-                mr: 1
+                mr: 1.5,
+                boxShadow: '0 8px 16px rgba(99, 102, 241, 0.3)'
               }}
             >
-              <PlayIcon sx={{ color: 'white' }} />
+              <PlayIcon sx={{ color: 'white', fontSize: 28 }} />
             </Box>
             <Typography
-              variant="h6"
+              variant="h5"
               noWrap
               sx={{
-                fontWeight: 800,
-                letterSpacing: '-0.5px',
+                fontWeight: 900,
+                letterSpacing: '-1px',
                 display: { xs: 'none', md: 'flex' },
+                fontSize: '1.6rem'
               }}
             >
-              Stream<Box component="span" sx={{ color: 'primary.main' }}>Vault</Box>
+              Stream<Box component="span" sx={{
+                background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>Vault</Box>
             </Typography>
           </Box>
 
-          <Box sx={{ flexGrow: 1, display: 'flex', gap: 2 }}>
+          <Box sx={{ flexGrow: 1, display: 'flex', gap: 1 }}>
             <Button
               component={Link}
               to="/"
               startIcon={<ExploreIcon />}
-              sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary' } }}
+              sx={{
+                color: 'text.secondary',
+                px: 2,
+                borderRadius: 2.5,
+                '&:hover': { color: 'text.primary', bgcolor: alpha('#fff', 0.05) }
+              }}
             >
               Explore
             </Button>
@@ -106,7 +130,12 @@ const Navbar = () => {
               component={Link}
               to="/subscriptions"
               startIcon={<PlansIcon />}
-              sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary' } }}
+              sx={{
+                color: 'text.secondary',
+                px: 2,
+                borderRadius: 2.5,
+                '&:hover': { color: 'text.primary', bgcolor: alpha('#fff', 0.05) }
+              }}
             >
               Plans
             </Button>
@@ -120,16 +149,37 @@ const Navbar = () => {
                     variant="outlined"
                     startIcon={<DashboardIcon />}
                     onClick={handleAdmin}
-                    sx={{ display: { xs: 'none', sm: 'flex' } }}
+                    sx={{
+                      display: { xs: 'none', sm: 'flex' },
+                      borderRadius: 3,
+                      borderColor: alpha(theme.palette.primary.main, 0.4),
+                      '&:hover': { borderColor: 'primary.main', bgcolor: alpha(theme.palette.primary.main, 0.05) }
+                    }}
                   >
-                    Admin
+                    Control Center
                   </Button>
                 )}
-                <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0.5, border: '1px solid rgba(255,255,255,0.1)' }}>
+                <Tooltip title="Account settings">
+                  <IconButton
+                    onClick={handleOpenUserMenu}
+                    sx={{
+                      p: 0.5,
+                      border: '2px solid',
+                      borderColor: alpha(theme.palette.primary.main, 0.2),
+                      transition: 'all 0.2s ease',
+                      '&:hover': { borderColor: 'primary.main', transform: 'scale(1.05)' }
+                    }}
+                  >
                     <Avatar
                       alt={user.name}
-                      sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}
+                      sx={{
+                        width: 36,
+                        height: 36,
+                        bgcolor: 'primary.main',
+                        fontWeight: 700,
+                        fontSize: '1rem',
+                        background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
+                      }}
                     >
                       {user.name.charAt(0)}
                     </Avatar>
@@ -152,51 +202,58 @@ const Navbar = () => {
                   onClose={handleCloseUserMenu}
                   PaperProps={{
                     sx: {
-                      width: 200,
+                      width: 240,
                       mt: 1.5,
-                      '&:before': {
-                        content: '""',
-                        display: 'block',
-                        position: 'absolute',
-                        top: 0,
-                        right: 14,
-                        width: 10,
-                        height: 10,
-                        bgcolor: 'background.paper',
-                        transform: 'translateY(-50%) rotate(45deg)',
-                        zIndex: 0,
-                      },
+                      p: 1,
+                      borderRadius: 4,
+                      bgcolor: alpha(theme.palette.background.paper, 0.95),
+                      backdropFilter: 'blur(20px)',
+                      border: `1px solid ${alpha(theme.palette.text.primary, 0.1)}`,
                     },
                   }}
                 >
-                  <Box sx={{ px: 2, py: 1 }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>{user.name}</Typography>
+                  <Box sx={{ px: 2, py: 1.5 }}>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800 }}>{user.name}</Typography>
                     <Typography variant="body2" color="text.secondary">{user.email}</Typography>
                   </Box>
-                  <Divider />
-                  <MenuItem onClick={handleProfile}>
+                  <Divider sx={{ my: 1, opacity: 0.5 }} />
+                  <MenuItem onClick={handleProfile} sx={{ borderRadius: 2, py: 1.2 }}>
                     <ListItemIcon><UserIcon fontSize="small" /></ListItemIcon>
-                    Profile
+                    Your Profile
                   </MenuItem>
                   {user.role === 'admin' && (
-                    <MenuItem onClick={handleAdmin} sx={{ display: { xs: 'flex', sm: 'none' } }}>
+                    <MenuItem onClick={handleAdmin} sx={{ borderRadius: 2, py: 1.2, display: { xs: 'flex', sm: 'none' } }}>
                       <ListItemIcon><DashboardIcon fontSize="small" /></ListItemIcon>
-                      Admin
+                      Control Center
                     </MenuItem>
                   )}
-                  <MenuItem onClick={handleLogout}>
-                    <ListItemIcon><LogoutIcon fontSize="small" /></ListItemIcon>
-                    Logout
+                  <MenuItem onClick={handleLogout} sx={{ borderRadius: 2, py: 1.2, color: 'error.main' }}>
+                    <ListItemIcon><LogoutIcon fontSize="small" color="error" /></ListItemIcon>
+                    Sign Out
                   </MenuItem>
                 </Menu>
               </>
             ) : (
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button component={Link} to="/login" variant="outlined">
-                  Login
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button
+                  component={Link}
+                  to="/login"
+                  variant="text"
+                  sx={{ color: 'text.primary', fontWeight: 700 }}
+                >
+                  Log In
                 </Button>
-                <Button component={Link} to="/register" variant="contained">
-                  Join Now
+                <Button
+                  component={Link}
+                  to="/register"
+                  variant="contained"
+                  sx={{
+                    borderRadius: 3,
+                    px: 3,
+                    boxShadow: '0 10px 20px rgba(99, 102, 241, 0.2)'
+                  }}
+                >
+                  Get Started
                 </Button>
               </Box>
             )}

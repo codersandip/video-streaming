@@ -40,76 +40,103 @@ import { motion } from 'framer-motion';
 
 const Admin = () => {
     const [activeTab, setActiveTab] = useState(0);
+    const theme = useTheme();
 
     const handleTabChange = (event, newValue) => {
         setActiveTab(newValue);
     };
 
     return (
-        <Container maxWidth="xl" sx={{ py: 4 }}>
-            <Grid container spacing={3}>
-                <Grid item xs={12} md={3}>
+        <Container maxWidth="xl" sx={{ py: 8 }}>
+            <Box sx={{ mb: 6 }}>
+                <Typography variant="h2" fontWeight={900} sx={{ letterSpacing: '-2px', mb: 1 }}>
+                    Admin <Box component="span" sx={{ color: 'primary.main' }}>Dashboard</Box>
+                </Typography>
+                <Typography variant="h6" color="text.secondary" fontWeight={500}>
+                    Manage your content, monitor uploads, and control user access.
+                </Typography>
+            </Box>
+
+            <Grid container spacing={4}>
+                <Grid item xs={12} md={3.5} lg={3}>
                     <Paper
                         elevation={0}
                         sx={{
                             p: 2,
-                            borderRadius: 4,
-                            bgcolor: 'rgba(30, 41, 59, 0.5)',
-                            backdropFilter: 'blur(10px)',
-                            border: '1px solid rgba(255,255,255,0.05)'
+                            borderRadius: 6,
+                            bgcolor: alpha(theme.palette.background.paper, 0.4),
+                            backdropFilter: 'blur(20px)',
+                            border: `1px solid ${alpha(theme.palette.text.primary, 0.08)}`,
+                            position: 'sticky',
+                            top: 100
                         }}
                     >
-                        <Typography variant="h6" sx={{ px: 2, py: 2, fontWeight: 800 }}>
-                            Admin Panel
-                        </Typography>
-                        <Divider sx={{ mb: 1, borderColor: 'rgba(255,255,255,0.05)' }} />
-                        <List component="nav">
+                        <List component="nav" sx={{ p: 1 }}>
                             <AdminMenuItem
                                 active={activeTab === 0}
                                 onClick={() => setActiveTab(0)}
                                 icon={<DashboardIcon />}
-                                label="Dashboard"
+                                label="Overview"
                             />
                             <AdminMenuItem
                                 active={activeTab === 1}
                                 onClick={() => setActiveTab(1)}
                                 icon={<UploadIcon />}
-                                label="Upload Video"
+                                label="Upload Stream"
                             />
+                            <Divider sx={{ my: 2, opacity: 0.1 }} />
                             <AdminMenuItem
                                 active={activeTab === 2}
                                 onClick={() => setActiveTab(2)}
                                 icon={<FilmIcon />}
-                                label="Manage Videos"
+                                label="Library"
                             />
                             <AdminMenuItem
                                 active={activeTab === 3}
                                 onClick={() => setActiveTab(3)}
                                 icon={<UsersIcon />}
-                                label="Users"
+                                label="Members"
                             />
                             <AdminMenuItem
                                 active={activeTab === 4}
                                 onClick={() => setActiveTab(4)}
                                 icon={<SettingsIcon />}
-                                label="Settings"
+                                label="System"
                             />
                         </List>
                     </Paper>
                 </Grid>
 
-                <Grid item xs={12} md={9}>
-                    <Box component={motion.div} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
+                <Grid item xs={12} md={8.5} lg={9}>
+                    <Box component={motion.div}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
                         {activeTab === 1 && <UploadView />}
                         {activeTab === 0 && (
-                            <Paper sx={{ p: 6, borderRadius: 4, textAlign: 'center', bgcolor: 'rgba(30, 41, 59, 0.5)' }}>
-                                <DashboardIcon sx={{ fontSize: 60, color: 'text.secondary', mb: 2 }} />
-                                <Typography variant="h5" color="text.secondary">Analytics coming soon...</Typography>
+                            <Paper sx={{
+                                p: 10,
+                                borderRadius: 8,
+                                textAlign: 'center',
+                                bgcolor: alpha(theme.palette.background.paper, 0.4),
+                                border: `1px solid ${alpha(theme.palette.text.primary, 0.08)}`
+                            }}>
+                                <DashboardIcon sx={{ fontSize: 80, color: alpha(theme.palette.text.secondary, 0.3), mb: 3 }} />
+                                <Typography variant="h4" fontWeight={800} gutterBottom>Insights Coming Soon</Typography>
+                                <Typography variant="body1" color="text.secondary">We're building a powerful analytics engine to help you track performance.</Typography>
                             </Paper>
                         )}
                         {activeTab !== 0 && activeTab !== 1 && (
-                            <Paper sx={{ p: 6, borderRadius: 4, textAlign: 'center', bgcolor: 'rgba(30, 41, 59, 0.5)' }}>
-                                <Typography variant="h5" color="text.secondary">Section coming soon...</Typography>
+                            <Paper sx={{
+                                p: 10,
+                                borderRadius: 8,
+                                textAlign: 'center',
+                                bgcolor: alpha(theme.palette.background.paper, 0.4),
+                                border: `1px solid ${alpha(theme.palette.text.primary, 0.08)}`
+                            }}>
+                                <Typography variant="h4" fontWeight={800} gutterBottom>Under Construction</Typography>
+                                <Typography variant="body1" color="text.secondary">This section is currently being developed for the ultimate admin experience.</Typography>
                             </Paper>
                         )}
                     </Box>
@@ -119,27 +146,37 @@ const Admin = () => {
     );
 };
 
-const AdminMenuItem = ({ active, onClick, icon, label }) => (
-    <ListItem disablePadding sx={{ mb: 0.5 }}>
-        <ListItemButton
-            onClick={onClick}
-            sx={{
-                borderRadius: 2,
-                bgcolor: active ? 'primary.main' : 'transparent',
-                color: active ? 'white' : 'text.secondary',
-                '&:hover': {
-                    bgcolor: active ? 'primary.dark' : 'rgba(255,255,255,0.05)',
-                    color: active ? 'white' : 'text.primary',
-                }
-            }}
-        >
-            <ListItemIcon sx={{ color: 'inherit', minWidth: 40 }}>
-                {icon}
-            </ListItemIcon>
-            <ListItemText primary={label} primaryTypographyProps={{ fontWeight: active ? 700 : 500 }} />
-        </ListItemButton>
-    </ListItem>
-);
+const AdminMenuItem = ({ active, onClick, icon, label }) => {
+    const theme = useTheme();
+    return (
+        <ListItem disablePadding sx={{ mb: 1 }}>
+            <ListItemButton
+                onClick={onClick}
+                sx={{
+                    py: 1.5,
+                    px: 2,
+                    borderRadius: 3,
+                    bgcolor: active ? alpha(theme.palette.primary.main, 0.1) : 'transparent',
+                    color: active ? 'primary.main' : 'text.secondary',
+                    transition: 'all 0.2s ease',
+                    '&:hover': {
+                        bgcolor: active ? alpha(theme.palette.primary.main, 0.15) : alpha(theme.palette.text.primary, 0.05),
+                        color: active ? 'primary.main' : 'text.primary',
+                        transform: 'translateX(4px)'
+                    }
+                }}
+            >
+                <ListItemIcon sx={{ color: 'inherit', minWidth: 42 }}>
+                    {icon}
+                </ListItemIcon>
+                <ListItemText primary={label} primaryTypographyProps={{ fontWeight: active ? 800 : 600, fontSize: '0.95rem' }} />
+                {active && (
+                    <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: 'primary.main', ml: 1 }} />
+                )}
+            </ListItemButton>
+        </ListItem>
+    );
+};
 
 const UploadView = () => {
     const [file, setFile] = useState(null);
